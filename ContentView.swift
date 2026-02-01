@@ -53,6 +53,10 @@ struct ContentView: View {
     @State private var showWeatherDetail = false
     @State private var flashlightBrightness: Float = 1.0
     
+    #if targetEnvironment(simulator)
+    @State private var debugHeading: Double = 0.0
+    #endif
+    
     // Constants
     let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0 // from Android source
     
