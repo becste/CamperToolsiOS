@@ -2,11 +2,16 @@ import SwiftUI
 import CoreLocation
 
 struct SettingsView: View {
+    @ObservedObject var motionManager: MotionManager
+    
     @AppStorage("bumpHeightMm") private var bumpHeightMm: Double = 0.0
     @AppStorage("compensationAppliesToRoll") private var compensationAppliesToRoll: Bool = false
     @AppStorage("useImperial") private var useImperial: Bool = false
     @AppStorage("useNightMode") private var useNightMode: Bool = false
     @Environment(\.dismiss) var dismiss
+    
+    // Constant shared with ContentView
+    let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0
     
     var body: some View {
         NavigationView {
@@ -20,6 +25,13 @@ struct SettingsView: View {
                             .multilineTextAlignment(.trailing)
                     }
                     Toggle("Compensation applies to Roll", isOn: $compensationAppliesToRoll)
+                    
+                    Button(action: calibrate) {
+                        HStack {
+                            Image(systemName: "level")
+                            Text("Auto Calibrate (Zero Current Tilt)")
+                        }
+                    }
                 }
                 
                 Section(header: Text("Units & Appearance")) {
@@ -34,6 +46,24 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+    
+    private func calibrate() {
+        // We want to find h (bumpHeightMm) such that the offset cancels out the current gravity reading.
+        // Formula derived from: gravity = h / sqrt(h^2 + s^2)
+        // Solved for h: h = (gravity * s) / sqrt(1 - gravity^2)
+        
+        let s = DEFAULT_SUPPORT_SPAN_MM
+        // Use X (Roll) or Y (Pitch) depending on toggle
+        let g = compensationAppliesToRoll ? motionManager.gravityX : motionManager.gravityY
+        
+        // Clamp g to avoid division by zero or imaginary numbers if sensor is crazy
+        let clampedG = max(-0.99, min(0.99, g))
+        
+        let h = (clampedG * s) / sqrt(1 - clampedG * clampedG)
+        
+        // Update storage
+        bumpHeightMm = h
     }
 }
 
@@ -52,6 +82,10 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showWeatherDetail = false
     @State private var flashlightBrightness: Float = 1.0
+    
+    #if targetEnvironment(simulator)
+    @State private var debugHeading: Double = 0.0
+    #endif
     
     // Constants
     let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0 // from Android source
@@ -255,7 +289,7 @@ struct ContentView: View {
             flashlightManager.toggle()
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsView(motionManager: motionManager)
         }
         .sheet(isPresented: $showWeatherDetail) {
             if let weather = weatherService.weather, let summary = WeatherHelper.process(weather, useImperial: useImperial) {
