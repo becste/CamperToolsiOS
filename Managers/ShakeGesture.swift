@@ -1,35 +1,39 @@
 import SwiftUI
 
-// Extension to detect shake gesture globally in the window
-extension UIWindow {
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        if motion == .motionShake {
-            NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
+// A View that can detect shake gestures by becoming the first responder
+struct ShakeDetector: UIViewRepresentable {
+    let onShake: () -> Void
+    
+    func makeUIView(context: Context) -> ShakeView {
+        let view = ShakeView()
+        view.onShake = onShake
+        return view
+    }
+    
+    func updateUIView(_ uiView: ShakeView, context: Context) {}
+    
+    class ShakeView: UIView {
+        var onShake: (() -> Void)?
+        
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            becomeFirstResponder()
         }
-        super.motionEnded(motion, with: event)
-    }
-}
-
-// Custom Notification Name
-extension UIDevice {
-    static let deviceDidShakeNotification = Notification.Name(rawValue: "deviceDidShakeNotification")
-}
-
-// A View Modifier to handle the shake
-struct DeviceShakeViewModifier: ViewModifier {
-    let action: () -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.deviceDidShakeNotification)) { _ in
-                action()
+        
+        override var canBecomeFirstResponder: Bool { true }
+        
+        override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+            if motion == .motionShake {
+                onShake?()
             }
+            super.motionEnded(motion, with: event)
+        }
     }
 }
 
-// Extension to View for easy usage
+// Extension to make it easy to add to any view
 extension View {
     func onShake(perform action: @escaping () -> Void) -> some View {
-        self.modifier(DeviceShakeViewModifier(action: action))
+        self.background(ShakeDetector(onShake: action))
     }
 }

@@ -20,7 +20,7 @@ struct WeatherSummary {
 
 class WeatherHelper {
     
-    static func process(_ data: WeatherData) -> WeatherSummary? {
+    static func process(_ data: WeatherData, useImperial: Bool) -> WeatherSummary? {
         // 1. Determine Current Hour Index
         // Open-Meteo hourly data usually starts at 00:00 of the requested day (or current day).
         // We will match the current hour to the 'time' array strings.
@@ -111,11 +111,11 @@ class WeatherHelper {
         let sunriseRaw = data.daily.sunrise.first ?? ""
         let sunsetRaw = data.daily.sunset.first ?? ""
         
-        // Format ISO times to "h:mm a"
+        // Format ISO times to "h:mm a" or "HH:mm"
         let isoFormatter = DateFormatter()
         isoFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "h:mm a"
+        timeFormatter.dateFormat = useImperial ? "h:mm a" : "HH:mm"
         
         let sunriseStr: String
         if let d = isoFormatter.date(from: sunriseRaw) {

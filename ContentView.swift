@@ -106,7 +106,7 @@ struct ContentView: View {
                     
                     if weatherService.isLoading {
                         Text("Loading weather...")
-                    } else if let weather = weatherService.weather, let summary = WeatherHelper.process(weather) {
+                    } else if let weather = weatherService.weather, let summary = WeatherHelper.process(weather, useImperial: useImperial) {
                         
                         // Row 1: Current Temp & Wind
                         HStack {
@@ -192,7 +192,7 @@ struct ContentView: View {
                         #if targetEnvironment(simulator)
                         // Simulator Debug Mode
                         VStack {
-                            CompassView(heading: debugHeading)
+                            CompassView(heading: debugHeading, isNightMode: useNightMode)
                             Spacer()
                             Text("\(Int(debugHeading))° \(cardinalDirection(debugHeading))")
                                 .font(.title2)
@@ -212,7 +212,7 @@ struct ContentView: View {
                         #else
                         // Real Device Mode
                         if let heading = locationManager.heading?.trueHeading {
-                            CompassView(heading: heading)
+                            CompassView(heading: heading, isNightMode: useNightMode)
                             VStack {
                                 Spacer()
                                 Text("\(Int(heading))° \(cardinalDirection(heading))")
@@ -285,7 +285,7 @@ struct ContentView: View {
             SettingsView()
         }
         .sheet(isPresented: $showWeatherDetail) {
-            if let weather = weatherService.weather, let summary = WeatherHelper.process(weather) {
+            if let weather = weatherService.weather, let summary = WeatherHelper.process(weather, useImperial: useImperial) {
                 WeatherDetailView(summary: summary, useImperial: useImperial, useNightMode: useNightMode)
             }
         }
