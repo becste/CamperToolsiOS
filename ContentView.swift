@@ -15,36 +15,97 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Level Calibration")) {
-                    HStack {
-                        Text("Bump Height (mm)")
-                        Spacer()
-                        TextField("0", value: $bumpHeightMm, format: .number)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    Toggle("Compensation applies to Roll", isOn: $compensationAppliesToRoll)
-                    
-                    Button(action: calibrate) {
-                        HStack {
-                            Image(systemName: "level")
-                            Text("Auto Calibrate (Zero Current Tilt)")
-                        }
-                    }
-                }
+            ZStack {
+                // Background
+                (useNightMode ? Color.black : Color(white: 0.15))
+                    .ignoresSafeArea()
                 
-                Section(header: Text("Units & Appearance")) {
-                    Toggle("Use Imperial Units", isOn: $useImperial)
-                    Toggle("Night Mode", isOn: $useNightMode)
+                ScrollView {
+                    VStack(spacing: 25) {
+                        
+                        // Section: Level Calibration
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Level Calibration")
+                                .font(.headline)
+                                .foregroundColor(useNightMode ? .red : .white)
+                            
+                            HStack {
+                                Text("Bump Height (mm)")
+                                    .foregroundColor(useNightMode ? .red : .white)
+                                Spacer()
+                                TextField("0", value: $bumpHeightMm, format: .number)
+                                    .keyboardType(.decimalPad)
+                                    .multilineTextAlignment(.trailing)
+                                    .foregroundColor(useNightMode ? .red : .white)
+                                    .padding(8)
+                                    .background(Color.secondary.opacity(0.2))
+                                    .cornerRadius(5)
+                                    .frame(width: 80)
+                            }
+                            
+                            Toggle("Compensation applies to Roll", isOn: $compensationAppliesToRoll)
+                                .foregroundColor(useNightMode ? .red : .white)
+                                .tint(useNightMode ? .red : .teal)
+                            
+                            Button(action: calibrate) {
+                                HStack {
+                                    Image(systemName: "level")
+                                    Text("Auto Calibrate (Zero Current Tilt)")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.secondary.opacity(0.2))
+                                .foregroundColor(useNightMode ? .red : .teal)
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding()
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        // Section: Units & Appearance
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Units & Appearance")
+                                .font(.headline)
+                                .foregroundColor(useNightMode ? .red : .white)
+                            
+                            Toggle("Use Imperial Units", isOn: $useImperial)
+                                .foregroundColor(useNightMode ? .red : .white)
+                                .tint(useNightMode ? .red : .teal)
+                            
+                            Toggle("Night Mode", isOn: $useNightMode)
+                                .foregroundColor(useNightMode ? .red : .white)
+                                .tint(useNightMode ? .red : .teal)
+                        }
+                        .padding()
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        Spacer()
+                    }
+                    .padding()
                 }
             }
             .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                Button("Done") {
-                    dismiss()
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(useNightMode ? .red : .teal)
                 }
             }
+        }
+        // Force the Navigation Bar appearance to match
+        .onAppear {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = useNightMode ? .black : UIColor(white: 0.15, alpha: 1.0)
+            appearance.titleTextAttributes = [.foregroundColor: useNightMode ? UIColor.red : UIColor.white]
+            
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
     }
     
