@@ -1,41 +1,59 @@
-# CamperTools iOS
+# CamperTools iOS 🚐
 
-A comprehensive utility app for campers and outdoor enthusiasts, ported from Android to iOS using SwiftUI.
+**CamperTools iOS** is a lightweight, ad-free utility app designed for RVers, campers, and van-lifers, ported from the original Android version to SwiftUI. It combines essential tools into a single, battery-friendly interface to help you park, level, and plan your stay.
 
-## Features
+## ✨ Features
 
-- **Spirit Level**: Visual 2D spirit level (circular and bar) to help level your camper or RV.
-- **Compass**: Magnetic compass with heading display (Device required).
-- **Altimeter**: Real-time elevation using GPS.
-- **Weather**: Current local weather, wind speed/direction, and forecasts via Open-Meteo.
-- **Flashlight**: Quick access toggle with adjustable brightness and "Shake to Toggle" feature.
-- **Sun & Cloud Details**: Sunrise, sunset, sunshine duration, cloud cover, and max wind gusts.
-- **Night Mode**: Red-tinted UI to preserve night vision.
-- **Customizable**: Imperial/Metric units, calibration offset (bump height), and more.
+*   **📏 Leveling Tool:** Precise 2-axis bubble level with visual guides. Calibrate it to your vehicle's unique floor or counter tilt.
+*   **🧭 Compass:** Smooth, filtered compass heading.
+*   **🌤️ Weather Forecast:**
+    *   Instant current conditions.
+    *   **Rolling 24-hour forecast** for temperature (min/max), wind gusts, and precipitation.
+    *   Detailed "Extra Data" view with Sunrise/Sunset times, Sunshine duration, and Cloud cover.
+    *   Powered by [Open-Meteo](https://open-meteo.com/).
+*   **🔦 Flashlight:** Quick access to the camera LED with adjustable brightness and **Shake-to-Toggle** feature.
+*   **🔴 Night Mode:** Preserves your night vision with a red-light interface and dimmed screen.
+*   **📐 Auto-Calibration:** Automatically zero out your level with a single tap in settings.
+*   **📷 Bump Compensation:** Account for your phone's camera bump to get a perfectly flat reading.
 
-## Requirements
+## 🛠️ Tech Stack
 
-- iOS 15.0+
-- Xcode 13.0+
-- iPhone (GPS and Magnetometer required for full functionality)
+*   **Language:** Swift
+*   **Framework:** SwiftUI
+*   **Platform:** iOS 15.0+
+*   **Architecture:** Combine-driven ObservableObjects (MVVM).
+*   **APIs:**
+    *   **Location:** CoreLocation for accurate weather and elevation.
+    *   **Motion:** CoreMotion (CMMotionManager) for fused, stable orientation data.
+    *   **Weather:** Open-Meteo API (No API key required).
 
-## Setup
+## 🚀 Getting Started
 
-1. Clone the repository.
-2. Open `CamperTools.xcodeproj` (or the folder) in Xcode.
-3. Ensure the project target has the necessary permissions in `Info.plist`:
-   - `Privacy - Location When In Use Usage Description`
-   - `Privacy - Camera Usage Description`
-4. Run on a physical device for full sensor support (Compass, Flashlight).
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/becste/CamperToolsiOS.git
+    ```
+2.  **Open in Xcode:**
+    Open the project folder or `CamperTools.xcodeproj`.
+3.  **Configure Permissions:**
+    Ensure `Info.plist` includes:
+    - `NSLocationWhenInUseUsageDescription`
+    - `NSCameraUsageDescription`
+4.  **Build and Run:**
+    Press `Cmd + R` to run on the Simulator or a physical iPhone.
 
-## Simulator Tips
+## 🤝 Contributing
 
-- **Location**: Use `Features > Location` in the Simulator menu to simulate GPS coordinates.
-- **Compass**: A debug slider appears in the Simulator to manually rotate the compass UI.
-- **Flashlight**: "Shake to Toggle" can be tested via `Device > Shake`.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Credits
+## 🔗 Related Projects
 
-- Weather data provided by [Open-Meteo](https://open-meteo.com/).
-- Original Android Code: [CamperTools Android](https://github.com/becste/CamperTools)
-- Android App: [Play Store Link](https://play.google.com/store/apps/details?id=com.campertools.app)
+*   **Original Android Version:** [CamperTools Android](https://github.com/becste/CamperTools)
+*   **Android App:** [Play Store Link](https://play.google.com/store/apps/details?id=com.campertools.app)
+
+## 📄 License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**. 
+
+---
+*Weather data provided by [Open-Meteo.com](https://open-meteo.com/)*
