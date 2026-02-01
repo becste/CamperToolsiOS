@@ -26,6 +26,8 @@ class FlashlightManager: ObservableObject {
         } catch {
             print("Flashlight Error: \(error)")
         }
+    }
+    
     func toggle() {
         setFlashlight(on: !isFlashlightOn)
     }
