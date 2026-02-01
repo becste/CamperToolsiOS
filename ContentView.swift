@@ -233,20 +233,16 @@ struct ContentView: View {
                         }
                         .padding(.top, 4)
                         
-                        // Attribution
-                        Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
-                            .font(.caption2)
-                            .foregroundColor(useNightMode ? .red.opacity(0.7) : .secondary)
-                            .padding(.top, 4)
-                        
-                    } else if let error = weatherService.errorMessage {
-                        Text("Error: \(error)")
-                            .font(.caption)
-                            .foregroundColor(.red)
                     } else {
                         Text("Tap refresh for weather")
                             .font(.caption)
                     }
+                    
+                    // Attribution - Always visible
+                    Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
+                        .font(.caption2)
+                        .foregroundColor(useNightMode ? .red.opacity(0.7) : .white.opacity(0.6))
+                        .padding(.top, 4)
                 }
                 .padding()
                 .background(Color.secondary.opacity(0.2))
