@@ -82,6 +82,16 @@ struct SettingsView: View {
                         .cornerRadius(12)
                         
                         Spacer()
+                        
+                        Button(action: { dismiss() }) {
+                            Text("Done")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.secondary.opacity(0.2))
+                                .foregroundColor(useNightMode ? .red : .teal)
+                                .cornerRadius(10)
+                        }
                     }
                     .padding()
                 }
@@ -89,12 +99,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                    .foregroundColor(useNightMode ? .red : .teal)
-                }
+                // Toolbar item removed to move button to bottom
             }
         }
         // Force the Navigation Bar appearance to match
@@ -309,13 +314,11 @@ struct ContentView: View {
                 .background(Color.secondary.opacity(0.2))
                 .cornerRadius(10)
                 
-                HStack {
-                    Spacer()
-                    Button("Settings") {
-                        showSettings = true
-                    }
-                    .foregroundColor(useNightMode ? .red : .teal)
+                Button("Settings") {
+                    showSettings = true
                 }
+                .font(.headline)
+                .foregroundColor(useNightMode ? .red : .teal)
                 .padding()
             }
             .padding()
