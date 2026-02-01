@@ -181,40 +181,14 @@ struct ContentView: View {
                 .cornerRadius(10)
                 .foregroundColor(useNightMode ? .red : .white)
                 
-                // Level / Compass Toggle
-                HStack(spacing: 0) {
-                    Button(action: { showCompass = false }) {
-                        Text("Level")
-                            .font(.headline)
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                !showCompass ? (useNightMode ? Color.red : Color.teal) : Color.clear
-                            )
-                            .foregroundColor(
-                                !showCompass ? Color.black : (useNightMode ? Color.red : Color.white)
-                            )
-                    }
-                    
-                    Button(action: { showCompass = true }) {
-                        Text("Compass")
-                            .font(.headline)
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                showCompass ? (useNightMode ? Color.red : Color.teal) : Color.clear
-                            )
-                            .foregroundColor(
-                                showCompass ? Color.black : (useNightMode ? Color.red : Color.white)
-                            )
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(useNightMode ? Color.red : Color.teal, lineWidth: 1)
-                )
-                .padding(.horizontal)
+                // Show Compass Toggle
+                Toggle("Show Compass", isOn: $showCompass)
+                    .padding()
+                    .background(Color.secondary.opacity(0.2))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                    .foregroundColor(useNightMode ? .red : .white)
+                    .tint(useNightMode ? .red : .teal)
                 
                 // Main View
                 ZStack {
