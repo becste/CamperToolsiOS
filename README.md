@@ -37,5 +37,5 @@ A comprehensive utility app for campers and outdoor enthusiasts, ported from And
 ## Credits
 
 - Weather data provided by [Open-Meteo](https://open-meteo.com/).
-- Original Android Version: [CamperTools Android](https://github.com/becste/CamperTools)
-- Android App Concept: [Play Store Link](https://play.google.com/store/apps/details?id=com.campertools.app)
+- Original Android Code: [CamperTools Android](https://github.com/becste/CamperTools)
+- Android App: [Play Store Link](https://play.google.com/store/apps/details?id=com.campertools.app)
