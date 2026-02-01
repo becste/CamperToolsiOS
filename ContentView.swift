@@ -53,10 +53,6 @@ struct ContentView: View {
     @State private var showWeatherDetail = false
     @State private var flashlightBrightness: Float = 1.0
     
-    #if targetEnvironment(simulator)
-    @State private var debugHeading: Double = 0.0
-    #endif
-    
     // Constants
     let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0 // from Android source
     
@@ -189,28 +185,6 @@ struct ContentView: View {
                 // Main View
                 ZStack {
                     if showCompass {
-                        #if targetEnvironment(simulator)
-                        // Simulator Debug Mode
-                        VStack {
-                            CompassView(heading: debugHeading, isNightMode: useNightMode)
-                            Spacer()
-                            Text("\(Int(debugHeading))° \(cardinalDirection(debugHeading))")
-                                .font(.title2)
-                                .foregroundColor(useNightMode ? .red : .white)
-                            
-                            VStack {
-                                Text("Simulator Debug: Rotate Compass")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Slider(value: $debugHeading, in: 0...360)
-                            }
-                            .padding()
-                            .background(Color.black.opacity(0.5))
-                            .cornerRadius(10)
-                            .padding()
-                        }
-                        #else
-                        // Real Device Mode
                         if let heading = locationManager.heading?.trueHeading {
                             CompassView(heading: heading, isNightMode: useNightMode)
                             VStack {
@@ -223,7 +197,6 @@ struct ContentView: View {
                             Text("Waiting for Heading...")
                                 .foregroundColor(useNightMode ? .red : .white)
                         }
-                        #endif
                     } else {
                         // Calculate tilt with compensation
                         let (tiltX, tiltY) = calculateTilt()
