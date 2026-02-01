@@ -237,12 +237,6 @@ struct ContentView: View {
                         Text("Tap refresh for weather")
                             .font(.caption)
                     }
-                    
-                    // Attribution - Always visible
-                    Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
-                        .font(.caption2)
-                        .foregroundColor(useNightMode ? .red.opacity(0.7) : .white.opacity(0.6))
-                        .padding(.top, 4)
                 }
                 .padding()
                 .background(Color.secondary.opacity(0.2))
@@ -322,6 +316,12 @@ struct ContentView: View {
                 .font(.headline)
                 .foregroundColor(useNightMode ? .red : .teal)
                 .padding()
+                
+                // Attribution - Bottom of Screen
+                Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
+                    .font(.caption2)
+                    .foregroundColor(useNightMode ? .red.opacity(0.7) : .secondary)
+                    .padding(.bottom, 5)
             }
             .padding()
         }
