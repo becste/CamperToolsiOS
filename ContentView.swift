@@ -1,8 +1,10 @@
 import SwiftUI
 import CoreLocation
+import StoreKit
 
 struct SettingsView: View {
     @ObservedObject var motionManager: MotionManager
+    @Binding var debugSimulateCompass: Bool // Simulator only
     
     @AppStorage("bumpHeightMm") private var bumpHeightMm: Double = 0.0
     @AppStorage("compensationAppliesToRoll") private var compensationAppliesToRoll: Bool = false
@@ -81,6 +83,22 @@ struct SettingsView: View {
                         .background(Color.secondary.opacity(0.1))
                         .cornerRadius(12)
                         
+                        #if targetEnvironment(simulator)
+                        // Section: Debug (Simulator Only)
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Simulator Debug")
+                                .font(.headline)
+                                .foregroundColor(.orange)
+                            
+                            Toggle("Test Compass (Auto-Rotate)", isOn: $debugSimulateCompass)
+                                .foregroundColor(useNightMode ? .red : .white)
+                                .tint(.orange)
+                        }
+                        .padding()
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        #endif
+                        
                         Spacer()
                         
                         Button(action: { dismiss() }) {
@@ -115,20 +133,12 @@ struct SettingsView: View {
     }
     
     private func calibrate() {
+        // ... (calibration logic remains same) ...
         // We want to find h (bumpHeightMm) such that the offset cancels out the current gravity reading.
-        // Formula derived from: gravity = h / sqrt(h^2 + s^2)
-        // Solved for h: h = (gravity * s) / sqrt(1 - gravity^2)
-        
         let s = DEFAULT_SUPPORT_SPAN_MM
-        // Use X (Roll) or Y (Pitch) depending on toggle
         let g = compensationAppliesToRoll ? motionManager.gravityX : motionManager.gravityY
-        
-        // Clamp g to avoid division by zero or imaginary numbers if sensor is crazy
         let clampedG = max(-0.99, min(0.99, g))
-        
         let h = (clampedG * s) / sqrt(1 - clampedG * clampedG)
-        
-        // Update storage
         bumpHeightMm = h
     }
 }
@@ -138,6 +148,7 @@ struct ContentView: View {
     @StateObject private var motionManager = MotionManager()
     @StateObject private var weatherService = WeatherService()
     @StateObject private var flashlightManager = FlashlightManager()
+    @StateObject private var storeManager = StoreManager() // IAP Manager
     
     @AppStorage("useImperial") private var useImperial: Bool = false
     @AppStorage("useNightMode") private var useNightMode: Bool = false
@@ -149,9 +160,9 @@ struct ContentView: View {
     @State private var showWeatherDetail = false
     @State private var flashlightBrightness: Float = 1.0
     
-    #if targetEnvironment(simulator)
-    @State private var debugHeading: Double = 0.0
-    #endif
+    @State private var debugSimulateCompass = false // Controlled by Settings in Simulator
+    @State private var simulatedHeading = 0.0
+    let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     
     // Constants
     let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0 // from Android source
@@ -255,7 +266,16 @@ struct ContentView: View {
                 // Main View
                 ZStack {
                     if showCompass {
-                        if let heading = locationManager.heading?.trueHeading {
+                        // Determine Heading Source
+                        var displayHeading: Double? = nil
+                        
+                        if debugSimulateCompass {
+                            displayHeading = simulatedHeading
+                        } else if let h = locationManager.heading?.trueHeading {
+                            displayHeading = h
+                        }
+                        
+                        if let heading = displayHeading {
                             CompassView(heading: heading, isNightMode: useNightMode)
                             VStack {
                                 Spacer()
@@ -310,12 +330,39 @@ struct ContentView: View {
                 .background(Color.secondary.opacity(0.2))
                 .cornerRadius(10)
                 
-                Button("Settings") {
-                    showSettings = true
+                // Buttons Row (Settings + Donate)
+                HStack(spacing: 20) {
+                    Button("Settings") {
+                        showSettings = true
+                    }
+                    .font(.headline)
+                    .foregroundColor(useNightMode ? .red : .teal)
+                    .padding()
+                    .background(Color.secondary.opacity(0.2))
+                    .cornerRadius(10)
+                    
+                    if let product = storeManager.products.first {
+                        Button(action: {
+                            Task { await storeManager.purchase(product) }
+                        }) {
+                            HStack {
+                                Image(systemName: "cup.and.saucer.fill")
+                                Text("Donate")
+                            }
+                        }
+                        .font(.headline)
+                        .foregroundColor(useNightMode ? .red : .teal)
+                        .padding()
+                        .background(Color.secondary.opacity(0.2))
+                        .cornerRadius(10)
+                    } else {
+                        // Fallback text if loading or no products
+                        Text("Loading...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
-                .font(.headline)
-                .foregroundColor(useNightMode ? .red : .teal)
-                .padding()
+                .padding(.bottom, 5)
                 
                 // Attribution - Bottom of Screen
                 Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
@@ -328,8 +375,14 @@ struct ContentView: View {
         .onShake {
             flashlightManager.toggle()
         }
+        .onReceive(timer) { _ in
+            if debugSimulateCompass {
+                simulatedHeading += 1.0
+                if simulatedHeading > 360 { simulatedHeading = 0 }
+            }
+        }
         .sheet(isPresented: $showSettings) {
-            SettingsView(motionManager: motionManager)
+            SettingsView(motionManager: motionManager, debugSimulateCompass: $debugSimulateCompass)
         }
         .sheet(isPresented: $showWeatherDetail) {
             if let weather = weatherService.weather, let summary = WeatherHelper.process(weather, useImperial: useImperial) {
@@ -340,11 +393,14 @@ struct ContentView: View {
             locationManager.requestPermission()
             locationManager.startUpdates()
             motionManager.startUpdates()
+            Task {
+                await storeManager.loadProducts()
+            }
         }
     }
     
     // MARK: - Helpers
-    
+    // ... (Keep existing helpers as they were) ...
     private func formatElevation(_ meters: Double) -> String {
         if useImperial {
             let feet = meters * 3.28084
@@ -388,26 +444,8 @@ struct ContentView: View {
     }
     
     private func calculateTilt() -> (Double, Double) {
-        // Raw values from MotionManager (Gravity vector)
-        // iOS Gravity: x (right), y (up), z (face)
-        // Android Code Mapping Logic:
-        // normX = ax / g.
-        // Android LevelView uses normX for "Horizontal Bar" (Side to side tilt) -> Roll
-        // Android LevelView uses normY for "Vertical Bar" (Front to back tilt) -> Pitch
-        
-        // MotionManager gravity.x corresponds to Roll component
-        // MotionManager gravity.y corresponds to Pitch component
-        
         let rawX = motionManager.gravityX
         let rawY = motionManager.gravityY
-        
-        // Smoothing is done by CMMotionManager internally usually better than raw accel
-        // But Android code had smoothing. We'll use raw for now as DeviceMotion is already fused/smooth.
-        
-        // Bump Compensation
-        // float compensationMagnitude = computeNormalizedOffset(...)
-        // if (compensationAppliesToRoll) offsetX = sign * magnitude
-        // else offsetY = sign * magnitude
         
         var offsetX = 0.0
         var offsetY = 0.0
@@ -416,10 +454,7 @@ struct ContentView: View {
              let denom = sqrt(bumpHeightMm * bumpHeightMm + DEFAULT_SUPPORT_SPAN_MM * DEFAULT_SUPPORT_SPAN_MM)
              if denom != 0 {
                  let magnitude = bumpHeightMm / denom
-                 let sign = bumpHeightMm > 0 ? 1.0 : -1.0 // Sign logic from Android seemed slightly redundant with abs, but let's follow.
-                 // Actually Android: float sign = Math.signum(lastBumpHeightMm);
-                 // compensationMagnitude = compute... (uses abs).
-                 // So magnitude is always positive. Offset takes sign.
+                 let sign = bumpHeightMm > 0 ? 1.0 : -1.0 
                  
                  let offsetVal = sign * abs(magnitude)
                  
