@@ -1,0 +1,20 @@
+# Xcode
+.DS_Store
+*.swp
+*.lock
+*.xcarchive
+*.key
+*.p12
+*.cer
+*.pem
+*.certSigningRequest
+
+# Build generated
+build/
+DerivedData/
+
+# Swift PM
+.swiftpm
+
+# User Specific
+xcuserdata/
