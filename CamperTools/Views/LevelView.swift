@@ -22,11 +22,6 @@ struct LevelView: View {
             let primaryColor = isNightMode ? Color.red : Color.teal
             let secondaryColor = isNightMode ? Color.red : Color.white
             
-            // Paints
-            let bubbleStyle = primaryColor.opacity(0.8)
-            let lineStyle = secondaryColor
-            let centerLineStyle = secondaryColor.opacity(0.8)
-            
             // Clamped Values
             let clampedX = max(-1, min(1, tiltX))
             let clampedY = max(-1, min(1, tiltY))

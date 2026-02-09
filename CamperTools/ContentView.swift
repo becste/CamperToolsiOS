@@ -410,14 +410,14 @@ struct ContentView: View {
                             .foregroundColor(useNightMode ? .red : .white)
                     }
                     .tint(useNightMode ? .red : .teal)
-                    .onChange(of: flashlightManager.isFlashlightOn) { newValue in
+                    .onChange(of: flashlightManager.isFlashlightOn) { _, newValue in
                         flashlightManager.setFlashlight(on: newValue, brightness: flashlightBrightness)
                     }
                     
                     if flashlightManager.isFlashlightOn {
                         Slider(value: $flashlightBrightness, in: 0.01...1.0)
                             .accentColor(useNightMode ? .red : .teal)
-                            .onChange(of: flashlightBrightness) { newValue in
+                            .onChange(of: flashlightBrightness) { _, newValue in
                                 flashlightManager.setFlashlight(on: true, brightness: newValue)
                             }
                     }
