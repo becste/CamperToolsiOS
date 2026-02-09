@@ -13,6 +13,9 @@
 build/
 DerivedData/
 
+# Android Code
+CamperToolsAndroid/
+
 # Swift PM
 .swiftpm
 
