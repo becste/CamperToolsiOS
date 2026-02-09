@@ -51,6 +51,49 @@ struct WheelAdjustView: View {
                     .background(Color.secondary.opacity(0.1))
                     .cornerRadius(12)
                     
+                    // Results Grid
+                    VStack(spacing: 10) {
+                        let shims = calculateShims()
+                        
+                        Text("FRONT (Phone Top)")
+                            .font(.caption.bold())
+                            .foregroundColor(useNightMode ? .red : .white)
+                        
+                        HStack(spacing: 30) {
+                            shimView(label: "FL", value: shims.fl)
+                            shimView(label: "FR", value: shims.fr)
+                        }
+                        
+                        // Visual vehicle representation
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(useNightMode ? Color.red : Color.white.opacity(0.3), lineWidth: 2)
+                                .frame(width: 80, height: 120)
+                            
+                            VStack {
+                                Image(systemName: "arrow.up")
+                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
+                                Text("VEHICLE\nFRONT")
+                                    .font(.system(size: 8, weight: .bold))
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
+                            }
+                        }
+                        .padding(.vertical, 5)
+                        
+                        HStack(spacing: 30) {
+                            shimView(label: "BL", value: shims.bl)
+                            shimView(label: "BR", value: shims.br)
+                        }
+                        
+                        Text("REAR")
+                            .font(.caption.bold())
+                            .foregroundColor(useNightMode ? .red : .white)
+                    }
+                    .padding(12)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(12)
+                    
                     // Recalculate Button
                     Button(action: startMeasurement) {
                         HStack {
