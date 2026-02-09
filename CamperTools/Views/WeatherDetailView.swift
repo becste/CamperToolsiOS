@@ -34,8 +34,6 @@ struct WeatherDetailView: View {
                             
                             DetailRow(label: "Wind Gusts", value: "\(formatSpeed(summary.maxGusts)) \(summary.dailyForecasts.first?.maxGustsDirection ?? "")", isNight: useNightMode)
                             
-                            DetailRow(label: "Wind Speed", value: "\(formatSpeed(summary.windSpeed)) \(summary.windDirection)", isNight: useNightMode)
-                            
                             DetailRow(label: "Sunshine (24h)", value: String(format: "%.1fh (%.0f%%)", summary.sunshineHours, summary.sunshinePercent), isNight: useNightMode)
                             
                             DetailRow(label: "Cloud Cover (avg)", value: String(format: "%.0f%%", summary.avgCloudCover), isNight: useNightMode)
@@ -77,7 +75,7 @@ struct WeatherDetailView: View {
                                         } else {
                                             Text("Dry")
                                                 .font(.caption)
-                                                .foregroundColor(useNightMode ? .red.opacity(0.6) : .secondary)
+                                                .foregroundColor(useNightMode ? .red.opacity(0.6) : .white)
                                         }
                                         
                                         if day.maxGusts > 20 {
