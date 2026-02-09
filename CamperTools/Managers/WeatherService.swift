@@ -43,7 +43,7 @@ class WeatherService: ObservableObject {
     @Published var errorMessage: String?
 
     func fetchWeather(lat: Double, lon: Double) {
-        let urlString = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m,precipitation,weathercode,winddirection_10m,cloudcover,sunshine_duration,is_day&daily=sunrise,sunset,windgusts_10m_max,winddirection_10m_dominant,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current_weather=true&forecast_days=3&timezone=auto"
+        let urlString = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m,precipitation,weathercode,winddirection_10m,cloudcover,sunshine_duration,is_day&daily=sunrise,sunset,windgusts_10m_max,winddirection_10m_dominant,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current_weather=true&forecast_days=4&timezone=auto"
         
         guard let url = URL(string: urlString) else { return }
         

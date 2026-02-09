@@ -176,15 +176,12 @@ class WeatherHelper {
         let dateOutputFormatter = DateFormatter()
         dateOutputFormatter.dateFormat = "EEE, MMM d"
         
-        for i in 0..<daily.time.count {
+        let dailyCount = daily.time.count
+        for i in 1..<min(4, dailyCount) {
             let dateStrRaw = daily.time[i]
             let dateDisplay: String
             if let d = dateInputFormatter.date(from: dateStrRaw) {
-                if calendar.isDateInToday(d) {
-                    dateDisplay = "Today"
-                } else {
-                    dateDisplay = dateOutputFormatter.string(from: d)
-                }
+                dateDisplay = dateOutputFormatter.string(from: d)
             } else {
                 dateDisplay = dateStrRaw
             }
