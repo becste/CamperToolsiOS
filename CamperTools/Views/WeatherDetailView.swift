@@ -32,7 +32,9 @@ struct WeatherDetailView: View {
                                 .frame(height: 1)
                                 .background(useNightMode ? Color.red.opacity(0.5) : Color.white.opacity(0.3))
                             
-                            DetailRow(label: "Max Gusts (24h)", value: formatSpeed(summary.maxGusts), isNight: useNightMode)
+                            DetailRow(label: "Wind Gusts", value: "\(formatSpeed(summary.maxGusts)) \(summary.dailyForecasts.first?.maxGustsDirection ?? "")", isNight: useNightMode)
+                            
+                            DetailRow(label: "Wind Speed", value: "\(formatSpeed(summary.windSpeed)) \(summary.windDirection)", isNight: useNightMode)
                             
                             DetailRow(label: "Sunshine (24h)", value: String(format: "%.1fh (%.0f%%)", summary.sunshineHours, summary.sunshinePercent), isNight: useNightMode)
                             
