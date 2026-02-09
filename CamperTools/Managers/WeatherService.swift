@@ -30,6 +30,10 @@ struct DailyUnits: Codable {
     let sunrise: [String]
     let sunset: [String]
     let windgusts_10m_max: [Double]?
+    let temperature_2m_max: [Double]?
+    let temperature_2m_min: [Double]?
+    let precipitation_sum: [Double]?
+    let precipitation_probability_max: [Int]?
 }
 
 class WeatherService: ObservableObject {
@@ -38,7 +42,7 @@ class WeatherService: ObservableObject {
     @Published var errorMessage: String?
 
     func fetchWeather(lat: Double, lon: Double) {
-        let urlString = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m,precipitation,weathercode,winddirection_10m,cloudcover,sunshine_duration,is_day&daily=sunrise,sunset,windgusts_10m_max&current_weather=true&timezone=auto"
+        let urlString = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)&hourly=temperature_2m,precipitation,weathercode,winddirection_10m,cloudcover,sunshine_duration,is_day&daily=sunrise,sunset,windgusts_10m_max,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&current_weather=true&forecast_days=3&timezone=auto"
         
         guard let url = URL(string: urlString) else { return }
         
