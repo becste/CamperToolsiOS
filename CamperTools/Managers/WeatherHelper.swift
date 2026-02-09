@@ -8,6 +8,7 @@ struct DailyForecast: Identifiable {
     let precipTotal: Double
     let precipProb: Int
     let maxGusts: Double
+    let maxGustsDirection: String
 }
 
 struct WeatherSummary {
@@ -34,6 +35,13 @@ struct WeatherSummary {
 class WeatherHelper {
     
     static func process(_ data: WeatherData, useImperial: Bool) -> WeatherSummary? {
+        let dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        
+        func getCardinalDirection(_ degrees: Double) -> String {
+            let index = Int((degrees + 22.5) / 45.0) & 7
+            return dirs[index]
+        }
+
         // 1. Determine Current Hour Index
         let now = Date()
         let calendar = Calendar.current
@@ -82,14 +90,13 @@ class WeatherHelper {
         }
         
         // Prevailing Wind Direction
-        let dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
         var maxBucketIdx = 0
         for i in 1..<8 {
             if windBuckets[i] > windBuckets[maxBucketIdx] {
                 maxBucketIdx = i
             }
         }
-        let prevailingDir = dirs[maxBucketIdx]
+        let prevailingDir = getCardinalDirection(Double(maxBucketIdx * 45))
         
         // Precip Description
         let precipDesc: String
@@ -187,6 +194,7 @@ class WeatherHelper {
             let pSum = daily.precipitation_sum?[i] ?? 0.0
             let pProb = daily.precipitation_probability_max?[i] ?? 0
             let gust = daily.windgusts_10m_max?[i] ?? 0.0
+            let gustDirDeg = daily.winddirection_10m_dominant?[i] ?? 0.0
             
             forecasts.append(DailyForecast(
                 dateStr: dateDisplay,
@@ -194,7 +202,8 @@ class WeatherHelper {
                 maxTemp: max,
                 precipTotal: pSum,
                 precipProb: pProb,
-                maxGusts: gust
+                maxGusts: gust,
+                maxGustsDirection: getCardinalDirection(gustDirDeg)
             ))
         }
         

@@ -79,7 +79,7 @@ struct WeatherDetailView: View {
                                         }
                                         
                                         if day.maxGusts > 20 {
-                                            Text(formatSpeed(day.maxGusts))
+                                            Text("\(formatSpeed(day.maxGusts)) \(day.maxGustsDirection)")
                                                 .font(.caption2)
                                                 .foregroundColor(useNightMode ? .red.opacity(0.8) : .orange)
                                         }
