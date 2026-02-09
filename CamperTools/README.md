@@ -5,6 +5,8 @@
 ## ✨ Features
 
 *   **📏 Leveling Tool:** Precise 2-axis bubble level with visual guides. Calibrate it to your vehicle's unique floor or counter tilt.
+*   **📐 Wheel Height Adjust:** Input your vehicle's dimensions to calculate the exact shim height needed for each wheel (**FL, FR, BL, BR**) to achieve a perfect level. Includes a **2S delayed recalculate** feature to average readings for maximum precision.
+*   **📖 In-App Guide:** Comprehensive manual explaining all features, available on first startup or anytime via Settings.
 *   **🧭 Compass:** Smooth, filtered compass heading.
 *   **🌤️ Weather Forecast:**
     *   Instant current conditions.
