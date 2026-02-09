@@ -66,53 +66,11 @@ struct WheelAdjustView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(isMeasuring ? Color.gray.opacity(0.3) : (useNightMode ? Color.red.opacity(0.2) : Color.teal.opacity(0.2)))
+                        .background(isMeasuring ? Color.gray.opacity(0.3) : Color.secondary.opacity(0.1))
                         .foregroundColor(useNightMode ? .red : .teal)
                         .cornerRadius(10)
                     }
                     .disabled(isMeasuring)
-                    
-                    // Results Grid
-                    VStack(spacing: 10) {
-                        let shims = calculateShims()
-                        
-                        Text("FRONT (Phone Top)")
-                            .font(.caption.bold())
-                            .foregroundColor(useNightMode ? .red : .white)
-                        
-                        HStack(spacing: 30) {
-                            shimView(label: "FL", value: shims.fl)
-                            shimView(label: "FR", value: shims.fr)
-                        }
-                        
-                        // Visual vehicle representation
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(useNightMode ? Color.red : Color.white.opacity(0.3), lineWidth: 2)
-                                .frame(width: 80, height: 120)
-                            
-                            VStack {
-                                Image(systemName: "arrow.up")
-                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
-                                Text("FRONT")
-                                    .font(.system(size: 8, weight: .bold))
-                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
-                            }
-                        }
-                        .padding(.vertical, 5)
-                        
-                        HStack(spacing: 30) {
-                            shimView(label: "BL", value: shims.bl)
-                            shimView(label: "BR", value: shims.br)
-                        }
-                        
-                        Text("REAR")
-                            .font(.caption.bold())
-                            .foregroundColor(useNightMode ? .red : .white)
-                    }
-                    .padding(12)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(12)
                     
                     Spacer()
                     
