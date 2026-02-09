@@ -471,7 +471,7 @@ struct ContentView: View {
                 // Attribution - Bottom of Screen
                 Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
                     .font(.caption2)
-                    .foregroundColor(useNightMode ? .red.opacity(0.7) : .white.opacity(0.6))
+                    .foregroundColor(useNightMode ? .red.opacity(0.7) : .teal)
                     .padding(.bottom, 5)
             }
             .padding()
