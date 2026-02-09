@@ -15,8 +15,7 @@
     *   Powered by [Open-Meteo](https://open-meteo.com/).
 *   **🔦 Flashlight:** Quick access to the camera LED with adjustable brightness and **Shake-to-Toggle** feature.
 *   **🔴 Night Mode:** Preserves your night vision with a red-light interface and dimmed screen.
-*   **📐 Auto-Calibration:** Automatically zero out your level with a single tap in settings.
-*   **📷 Bump Compensation:** Account for your phone's camera bump to get a perfectly flat reading.
+*   **📐 Auto-Calibration:** Easily zero out your level with a single tap in settings to account for camera bumps or uneven surfaces.
 
 ## 🛠️ Tech Stack
 

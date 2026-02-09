@@ -1,20 +1,24 @@
 # Release Notes - CamperTools iOS
 
-## Version 1.1 (Build 1.2)
-
-### New Features
-- **Wheel Height Adjustment:** Input your vehicle's dimensions to calculate the exact shim height needed for each wheel (FL, FR, BL, BR) to achieve a perfect level.
-- **2S Delayed Recalculate:** A new measurement feature that averages sensor readings over 2 seconds for maximum precision when calculating wheel shims.
-- **In-App Guide:** A comprehensive manual (v1.1) is now available on first launch and via the Settings menu to explain all app features.
+## Version 1.3 (Build 1.3)
 
 ### Improvements
-- **UI/UX Refinements:**
-    - Added "Height Adjust" shortcut directly next to the leveling tool.
-    - Added a "Help" section in Settings for easy access to the guide.
-    - Updated the Settings "Done" button to "Save & Done" for better clarity.
-    - Improved readability of labels in the Height Adjust view (White text on dark background).
-    - Optimized layout of the Height Adjust screen to fit more devices without scrolling.
-- **Orientation Clarity:** The Height Adjust view now explicitly labels the front as "(Phone Top)" to ensure correct device orientation during use.
+- **Weather Enhancements:**
+    - Detailed weather now shows **Wind Gusts** with direction.
+    - 3-Day forecast now shows the next three days, excluding today.
+    - Improved readability of "Dry" conditions in the forecast.
+    - Updated Open-Meteo attribution link to teal for better visibility.
+- **UI Refinements:**
+    - Height Adjust view now labels the vehicle graphic as "VEHICLE FRONT" on two lines for clarity.
+    - Height Adjust dimension labels and wheel labels are now white for better readability.
+    - Grouped Help and "Save & Done" buttons in Settings for better flow.
+    - Reorganized the Help Guide (v1.3) with improved readability and an "X" close button.
+
+## Version 1.1 (Build 1.2)
+- **Wheel Height Adjustment:** Calculate shim heights for each wheel to level your vehicle.
+- **2S Delayed Recalculate:** High-precision measurement averaging for wheel leveling.
+- **In-App Guide:** Added comprehensive manual (v1.1) to Settings and first launch.
+- **UI/UX:** Added "Height Adjust" shortcut, improved text readability, and added orientation labels.
 
 ## Version 1.0 (Build 1.1)
 - Initial release with Leveling Tool, Compass, Weather Forecast, Flashlight, and Night Mode.

@@ -55,7 +55,7 @@ struct HelpView: View {
                     .padding()
                 }
             }
-            .navigationTitle("CamperTools Guide v1.1")
+            .navigationTitle("CamperTools Guide v1.3")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
