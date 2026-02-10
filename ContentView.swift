@@ -1,19 +1,42 @@
 import SwiftUI
 import CoreLocation
 import StoreKit
+import Combine
 
 struct SettingsView: View {
     @ObservedObject var motionManager: MotionManager
     @Binding var debugSimulateCompass: Bool // Simulator only
     
-    @AppStorage("bumpHeightMm") private var bumpHeightMm: Double = 0.0
-    @AppStorage("compensationAppliesToRoll") private var compensationAppliesToRoll: Bool = false
+    // Calibration Offsets (Zero Points)
+    @AppStorage("calibPitch") private var calibPitch: Double = 0.0
+    @AppStorage("calibRoll") private var calibRoll: Double = 0.0
+    
     @AppStorage("useImperial") private var useImperial: Bool = false
     @AppStorage("useNightMode") private var useNightMode: Bool = false
     @Environment(\.dismiss) var dismiss
     
-    // Constant shared with ContentView
-    let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0
+    @State private var showHelp = false
+    
+    // Computed Bindings for UI (Degrees)
+    private var pitchDegrees: Binding<Double> {
+        Binding(
+            get: { 
+                let val = max(-1, min(1, calibPitch))
+                return asin(val) * 180 / .pi 
+            },
+            set: { calibPitch = sin($0 * .pi / 180) }
+        )
+    }
+    
+    private var rollDegrees: Binding<Double> {
+        Binding(
+            get: { 
+                let val = max(-1, min(1, calibRoll))
+                return asin(val) * 180 / .pi 
+            },
+            set: { calibRoll = sin($0 * .pi / 180) }
+        )
+    }
     
     var body: some View {
         NavigationView {
@@ -31,34 +54,56 @@ struct SettingsView: View {
                                 .font(.headline)
                                 .foregroundColor(useNightMode ? .red : .white)
                             
-                            HStack {
-                                Text("Bump Height (mm)")
-                                    .foregroundColor(useNightMode ? .red : .white)
-                                Spacer()
-                                TextField("0", value: $bumpHeightMm, format: .number)
+                            Text("Adjust the offsets manually (in degrees) or use Auto Calibrate to zero-out the current tilt.")
+                                .font(.caption)
+                                .foregroundColor(useNightMode ? .red.opacity(0.8) : .secondary)
+
+                            // Manual Pitch
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Pitch Offset (Degrees)")
+                                TextField("0.0°", value: pitchDegrees, format: .number.precision(.fractionLength(1)))
                                     .keyboardType(.decimalPad)
-                                    .multilineTextAlignment(.trailing)
-                                    .foregroundColor(useNightMode ? .red : .white)
                                     .padding(8)
                                     .background(Color.secondary.opacity(0.2))
                                     .cornerRadius(5)
-                                    .frame(width: 80)
+                                    .foregroundColor(useNightMode ? .red : .white)
                             }
+                            .foregroundColor(useNightMode ? .red : .white)
                             
-                            Toggle("Compensation applies to Roll", isOn: $compensationAppliesToRoll)
-                                .foregroundColor(useNightMode ? .red : .white)
-                                .tint(useNightMode ? .red : .teal)
+                            // Manual Roll
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Roll Offset (Degrees)")
+                                TextField("0.0°", value: rollDegrees, format: .number.precision(.fractionLength(1)))
+                                    .keyboardType(.decimalPad)
+                                    .padding(8)
+                                    .background(Color.secondary.opacity(0.2))
+                                    .cornerRadius(5)
+                                    .foregroundColor(useNightMode ? .red : .white)
+                            }
+                            .foregroundColor(useNightMode ? .red : .white)
                             
-                            Button(action: calibrate) {
-                                HStack {
-                                    Image(systemName: "level")
-                                    Text("Auto Calibrate (Zero Current Tilt)")
+                            // Buttons
+                            HStack(spacing: 20) {
+                                Button(action: calibrate) {
+                                    HStack {
+                                        Image(systemName: "level")
+                                        Text("Auto Calibrate")
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.secondary.opacity(0.2))
+                                    .foregroundColor(useNightMode ? .red : .teal)
+                                    .cornerRadius(10)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.secondary.opacity(0.2))
-                                .foregroundColor(useNightMode ? .red : .teal)
-                                .cornerRadius(10)
+                                
+                                Button(action: reset) {
+                                    Text("Reset")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.red.opacity(0.2))
+                                        .foregroundColor(.red)
+                                        .cornerRadius(10)
+                                }
                             }
                         }
                         .padding()
@@ -83,6 +128,38 @@ struct SettingsView: View {
                         .background(Color.secondary.opacity(0.1))
                         .cornerRadius(12)
                         
+                        // Section: Help
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Support")
+                                .font(.headline)
+                                .foregroundColor(useNightMode ? .red : .white)
+                            
+                            Button(action: { showHelp = true }) {
+                                HStack {
+                                    Image(systemName: "questionmark.circle")
+                                    Text("Help")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.secondary.opacity(0.2))
+                                .foregroundColor(useNightMode ? .red : .teal)
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding()
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        Button(action: { dismiss() }) {
+                            Text("Save & Done")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.secondary.opacity(0.2))
+                                .foregroundColor(useNightMode ? .red : .teal)
+                                .cornerRadius(10)
+                        }
+                        
                         #if targetEnvironment(simulator)
                         // Section: Debug (Simulator Only)
                         VStack(alignment: .leading, spacing: 15) {
@@ -98,24 +175,15 @@ struct SettingsView: View {
                         .background(Color.secondary.opacity(0.1))
                         .cornerRadius(12)
                         #endif
-                        
-                        Spacer()
-                        
-                        Button(action: { dismiss() }) {
-                            Text("Done")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.secondary.opacity(0.2))
-                                .foregroundColor(useNightMode ? .red : .teal)
-                                .cornerRadius(10)
-                        }
                     }
                     .padding()
                 }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showHelp) {
+                HelpView()
+            }
             .toolbar {
                 // Toolbar item removed to move button to bottom
             }
@@ -133,13 +201,14 @@ struct SettingsView: View {
     }
     
     private func calibrate() {
-        // ... (calibration logic remains same) ...
-        // We want to find h (bumpHeightMm) such that the offset cancels out the current gravity reading.
-        let s = DEFAULT_SUPPORT_SPAN_MM
-        let g = compensationAppliesToRoll ? motionManager.gravityX : motionManager.gravityY
-        let clampedG = max(-0.99, min(0.99, g))
-        let h = (clampedG * s) / sqrt(1 - clampedG * clampedG)
-        bumpHeightMm = h
+        // Set zero point to current gravity reading
+        calibPitch = motionManager.gravityY
+        calibRoll = motionManager.gravityX
+    }
+    
+    private func reset() {
+        calibPitch = 0.0
+        calibRoll = 0.0
     }
 }
 
@@ -152,20 +221,23 @@ struct ContentView: View {
     
     @AppStorage("useImperial") private var useImperial: Bool = false
     @AppStorage("useNightMode") private var useNightMode: Bool = false
-    @AppStorage("bumpHeightMm") private var bumpHeightMm: Double = 0.0
-    @AppStorage("compensationAppliesToRoll") private var compensationAppliesToRoll: Bool = false
+    
+    // Replaced old Bump calibration with direct offsets
+    @AppStorage("calibPitch") private var calibPitch: Double = 0.0
+    @AppStorage("calibRoll") private var calibRoll: Double = 0.0
+    
+    @AppStorage("isFirstLaunch") private var isFirstLaunch: Bool = true
     
     @State private var showCompass = false
     @State private var showSettings = false
     @State private var showWeatherDetail = false
+    @State private var showWheelAdjust = false
+    @State private var showHelp = false
     @State private var flashlightBrightness: Float = 1.0
     
     @State private var debugSimulateCompass = false // Controlled by Settings in Simulator
     @State private var simulatedHeading = 0.0
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
-    
-    // Constants
-    let DEFAULT_SUPPORT_SPAN_MM: Double = 70.0 // from Android source
     
     var body: some View {
         ZStack {
@@ -266,22 +338,32 @@ struct ContentView: View {
                 // Main View
                 ZStack {
                     if showCompass {
-                        // Determine Heading Source
-                        var displayHeading: Double? = nil
-                        
-                        if debugSimulateCompass {
-                            displayHeading = simulatedHeading
-                        } else if let h = locationManager.heading?.trueHeading {
-                            displayHeading = h
-                        }
+                        // Compute heading to display as a pure expression to keep ViewBuilder happy
+                        let displayHeading: Double? = {
+                            if debugSimulateCompass {
+                                return simulatedHeading
+                            } else if let h = locationManager.heading?.trueHeading {
+                                return h
+                            } else {
+                                return nil
+                            }
+                        }()
                         
                         if let heading = displayHeading {
-                            CompassView(heading: heading, isNightMode: useNightMode)
-                            VStack {
-                                Spacer()
+                            VStack(spacing: 12) {
+                                // Smaller compass centered
+                                GeometryReader { geo in
+                                    let side = min(geo.size.width, geo.size.height) * 0.7
+                                    CompassView(heading: heading, isNightMode: useNightMode)
+                                        .frame(width: side, height: side)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                
                                 Text("\(Int(heading))° \(cardinalDirection(heading))")
                                     .font(.title2)
                                     .foregroundColor(useNightMode ? .red : .white)
+                                    .padding(.bottom, 8)
                             }
                         } else {
                             Text("Waiting for Heading...")
@@ -291,7 +373,21 @@ struct ContentView: View {
                         // Calculate tilt with compensation
                         let (tiltX, tiltY) = calculateTilt()
                         
-                        LevelView(tiltX: tiltX, tiltY: tiltY, isNightMode: useNightMode)
+                        ZStack(alignment: .topTrailing) {
+                            LevelView(tiltX: tiltX, tiltY: tiltY, isNightMode: useNightMode)
+                            
+                            Button(action: { showWheelAdjust = true }) {
+                                Text("Height\nAdjust")
+                                    .font(.caption2.bold())
+                                    .multilineTextAlignment(.center)
+                                    .padding(8)
+                                    .background(Color.secondary.opacity(0.2))
+                                    .foregroundColor(useNightMode ? .red : .teal)
+                                    .cornerRadius(8)
+                            }
+                            .padding(.trailing, 10)
+                            .padding(.top, 10)
+                        }
                         
                         VStack {
                             Spacer()
@@ -314,14 +410,14 @@ struct ContentView: View {
                             .foregroundColor(useNightMode ? .red : .white)
                     }
                     .tint(useNightMode ? .red : .teal)
-                    .onChange(of: flashlightManager.isFlashlightOn) { newValue in
+                    .onChange(of: flashlightManager.isFlashlightOn) { _, newValue in
                         flashlightManager.setFlashlight(on: newValue, brightness: flashlightBrightness)
                     }
                     
                     if flashlightManager.isFlashlightOn {
                         Slider(value: $flashlightBrightness, in: 0.01...1.0)
                             .accentColor(useNightMode ? .red : .teal)
-                            .onChange(of: flashlightBrightness) { newValue in
+                            .onChange(of: flashlightBrightness) { _, newValue in
                                 flashlightManager.setFlashlight(on: true, brightness: newValue)
                             }
                     }
@@ -330,17 +426,9 @@ struct ContentView: View {
                 .background(Color.secondary.opacity(0.2))
                 .cornerRadius(10)
                 
-                // Buttons Row (Settings + Donate)
+                // Buttons Row (Donate + Settings)
                 HStack(spacing: 20) {
-                    Button("Settings") {
-                        showSettings = true
-                    }
-                    .font(.headline)
-                    .foregroundColor(useNightMode ? .red : .teal)
-                    .padding()
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(10)
-                    
+                    // Donate on the left now
                     if let product = storeManager.products.first {
                         Button(action: {
                             Task { await storeManager.purchase(product) }
@@ -357,17 +445,33 @@ struct ContentView: View {
                         .cornerRadius(10)
                     } else {
                         // Fallback text if loading or no products
-                        Text("Loading...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        if let error = storeManager.errorMessage {
+                            Text(error)
+                                .font(.caption2)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text("Loading...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
+                    
+                    Button("Settings") {
+                        showSettings = true
+                    }
+                    .font(.headline)
+                    .foregroundColor(useNightMode ? .red : .teal)
+                    .padding()
+                    .background(Color.secondary.opacity(0.2))
+                    .cornerRadius(10)
                 }
                 .padding(.bottom, 5)
                 
                 // Attribution - Bottom of Screen
                 Link("Weather data by Open-Meteo.com", destination: URL(string: "https://open-meteo.com/")!)
                     .font(.caption2)
-                    .foregroundColor(useNightMode ? .red.opacity(0.7) : .white.opacity(0.6))
+                    .foregroundColor(useNightMode ? .red.opacity(0.7) : .teal)
                     .padding(.bottom, 5)
             }
             .padding()
@@ -389,7 +493,17 @@ struct ContentView: View {
                 WeatherDetailView(summary: summary, useImperial: useImperial, useNightMode: useNightMode)
             }
         }
+        .sheet(isPresented: $showWheelAdjust) {
+            WheelAdjustView(motionManager: motionManager)
+        }
+        .sheet(isPresented: $showHelp) {
+            HelpView()
+        }
         .onAppear {
+            if isFirstLaunch {
+                showHelp = true
+                isFirstLaunch = false
+            }
             locationManager.requestPermission()
             locationManager.startUpdates()
             motionManager.startUpdates()
@@ -400,7 +514,6 @@ struct ContentView: View {
     }
     
     // MARK: - Helpers
-    // ... (Keep existing helpers as they were) ...
     private func formatElevation(_ meters: Double) -> String {
         if useImperial {
             let feet = meters * 3.28084
@@ -447,28 +560,9 @@ struct ContentView: View {
         let rawX = motionManager.gravityX
         let rawY = motionManager.gravityY
         
-        var offsetX = 0.0
-        var offsetY = 0.0
-        
-        if bumpHeightMm != 0 {
-             let denom = sqrt(bumpHeightMm * bumpHeightMm + DEFAULT_SUPPORT_SPAN_MM * DEFAULT_SUPPORT_SPAN_MM)
-             if denom != 0 {
-                 let magnitude = bumpHeightMm / denom
-                 let sign = bumpHeightMm > 0 ? 1.0 : -1.0 
-                 
-                 let offsetVal = sign * abs(magnitude)
-                 
-                 if compensationAppliesToRoll {
-                     offsetX = offsetVal
-                 } else {
-                     offsetY = offsetVal
-                 }
-             }
-        }
-        
-        // Apply offset
-        let finalX = rawX - offsetX
-        let finalY = rawY - offsetY
+        // Apply calibration offsets
+        let finalX = rawX - calibRoll
+        let finalY = rawY - calibPitch
         
         return (finalX, finalY)
     }

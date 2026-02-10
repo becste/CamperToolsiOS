@@ -1,8 +1,10 @@
 import StoreKit
+import Combine
 
 class StoreManager: ObservableObject {
     @Published var products: [Product] = []
     @Published var purchaseState: PurchaseState = .idle
+    @Published var errorMessage: String? = nil
     
     enum PurchaseState {
         case idle
@@ -12,14 +14,19 @@ class StoreManager: ObservableObject {
         case cancelled
     }
     
-    private let productIds = ["com.campertools.donationcoffee"] // Replace with your actual Product ID
+    private let productIds = ["donationcoffee"] // Corrected Product ID from App Store Connect
     
     @MainActor
     func loadProducts() async {
+        errorMessage = nil
         do {
             products = try await Product.products(for: productIds)
+            if products.isEmpty {
+                errorMessage = "No products found. Check ID."
+            }
         } catch {
             print("Failed to load products: \(error)")
+            errorMessage = "Error: \(error.localizedDescription)"
         }
     }
     

@@ -1,5 +1,16 @@
 import Foundation
 
+struct DailyForecast: Identifiable {
+    let id = UUID()
+    let dateStr: String
+    let minTemp: Double
+    let maxTemp: Double
+    let precipTotal: Double
+    let precipProb: Int
+    let maxGusts: Double
+    let maxGustsDirection: String
+}
+
 struct WeatherSummary {
     let nowTemp: Double
     let minTemp24h: Double
@@ -16,21 +27,23 @@ struct WeatherSummary {
     let sunshineHours: Double
     let sunshinePercent: Double
     let avgCloudCover: Double
+    
+    // 3-Day Forecast
+    let dailyForecasts: [DailyForecast]
 }
 
 class WeatherHelper {
     
     static func process(_ data: WeatherData, useImperial: Bool) -> WeatherSummary? {
-        // 1. Determine Current Hour Index
-        // Open-Meteo hourly data usually starts at 00:00 of the requested day (or current day).
-        // We will match the current hour to the 'time' array strings.
-        let now = Date()
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds] // OpenMeteo uses ISO8601
+        let dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
         
-        // Actually Open-Meteo returns "2023-10-27T00:00" (no Z, local time if timezone=auto, or GMT).
-        // Let's rely on the simple logic: The API returns data for "today" starting at index 0 = 00:00.
-        // So current hour (0-23) is the index.
+        func getCardinalDirection(_ degrees: Double) -> String {
+            let index = Int((degrees + 22.5) / 45.0) & 7
+            return dirs[index]
+        }
+
+        // 1. Determine Current Hour Index
+        let now = Date()
         let calendar = Calendar.current
         let currentHour = calendar.component(.hour, from: now)
         
@@ -77,14 +90,13 @@ class WeatherHelper {
         }
         
         // Prevailing Wind Direction
-        let dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
         var maxBucketIdx = 0
         for i in 1..<8 {
             if windBuckets[i] > windBuckets[maxBucketIdx] {
                 maxBucketIdx = i
             }
         }
-        let prevailingDir = dirs[maxBucketIdx]
+        let prevailingDir = getCardinalDirection(Double(maxBucketIdx * 45))
         
         // Precip Description
         let precipDesc: String
@@ -107,11 +119,9 @@ class WeatherHelper {
         }
         
         // ---- Sun / Detail Data ----
-        // Sunrise/Sunset (Daily index 0 is today)
         let sunriseRaw = data.daily.sunrise.first ?? ""
         let sunsetRaw = data.daily.sunset.first ?? ""
         
-        // Format ISO times to "h:mm a" or "HH:mm"
         let isoFormatter = DateFormatter()
         isoFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         let timeFormatter = DateFormatter()
@@ -141,7 +151,6 @@ class WeatherHelper {
         var cloudCount = 0
         
         if let sunArr = hourly.sunshine_duration, let isDayArr = hourly.is_day, let cloudArr = hourly.cloudcover {
-             // Loop same range
              let limit = min(sunArr.count, min(isDayArr.count, cloudArr.count))
              let loopEnd = min(limit, startIdx + 24)
             
@@ -159,6 +168,42 @@ class WeatherHelper {
         let sunshinePercent = totalDaylightSec > 0 ? (totalSunshineSec / totalDaylightSec) * 100.0 : 0.0
         let avgCloud = cloudCount > 0 ? sumCloud / Double(cloudCount) : 0.0
         
+        // ---- 3-Day Forecast ----
+        var forecasts: [DailyForecast] = []
+        let daily = data.daily
+        let dateInputFormatter = DateFormatter()
+        dateInputFormatter.dateFormat = "yyyy-MM-dd"
+        let dateOutputFormatter = DateFormatter()
+        dateOutputFormatter.dateFormat = "EEE, MMM d"
+        
+        let dailyCount = daily.time.count
+        for i in 1..<min(4, dailyCount) {
+            let dateStrRaw = daily.time[i]
+            let dateDisplay: String
+            if let d = dateInputFormatter.date(from: dateStrRaw) {
+                dateDisplay = dateOutputFormatter.string(from: d)
+            } else {
+                dateDisplay = dateStrRaw
+            }
+            
+            let min = daily.temperature_2m_min?[i] ?? 0.0
+            let max = daily.temperature_2m_max?[i] ?? 0.0
+            let pSum = daily.precipitation_sum?[i] ?? 0.0
+            let pProb = daily.precipitation_probability_max?[i] ?? 0
+            let gust = daily.windgusts_10m_max?[i] ?? 0.0
+            let gustDirDeg = daily.winddirection_10m_dominant?[i] ?? 0.0
+            
+            forecasts.append(DailyForecast(
+                dateStr: dateDisplay,
+                minTemp: min,
+                maxTemp: max,
+                precipTotal: pSum,
+                precipProb: pProb,
+                maxGusts: gust,
+                maxGustsDirection: getCardinalDirection(gustDirDeg)
+            ))
+        }
+        
         return WeatherSummary(
             nowTemp: data.current_weather.temperature,
             minTemp24h: minT,
@@ -172,7 +217,8 @@ class WeatherHelper {
             maxGusts: maxGusts,
             sunshineHours: sunshineHours,
             sunshinePercent: sunshinePercent,
-            avgCloudCover: avgCloud
+            avgCloudCover: avgCloud,
+            dailyForecasts: forecasts
         )
     }
 }

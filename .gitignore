@@ -20,4 +20,4 @@ CamperToolsAndroid/
 .swiftpm
 
 # User Specific
-xcuserdata/
+xcuserdata/\n# Build artifacts\n*.xcarchive\n*.dSYM\nDerivedData/
