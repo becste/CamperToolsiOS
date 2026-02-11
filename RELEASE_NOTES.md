@@ -10,4 +10,6 @@
     *   **Opaque Overlays**: Switched Settings and Height Adjust screens to `fullScreenCover` to prevent background content from bleeding through when the keyboard is active.
     *   **Weather Details**: Fixed line-breaking issues for wind gusts in the 3-day forecast.
     *   **Visual Polish**: Updated text colors (GPS accuracy and Level Calibration) for better readability in standard mode.
-*   **Bug Fixes**: Improved stability of the IAP donation process and state management.
+*   **Bug Fixes**: 
+    *   Improved stability of the IAP donation process and state management.
+    *   Fixed a bug where the flashlight toggle would remain "on" in the UI after an app restart even if the light was off.

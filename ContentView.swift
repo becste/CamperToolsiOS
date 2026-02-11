@@ -501,6 +501,7 @@ struct ContentView: View {
             HelpView()
         }
         .onAppear {
+            flashlightManager.setFlashlight(on: false)
             if isFirstLaunch {
                 showHelp = true
                 isFirstLaunch = false
