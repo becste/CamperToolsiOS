@@ -82,9 +82,11 @@ struct WeatherDetailView: View {
                                             Text("\(formatSpeed(day.maxGusts)) \(day.maxGustsDirection)")
                                                 .font(.caption2)
                                                 .foregroundColor(useNightMode ? .red.opacity(0.8) : .orange)
+                                                .lineLimit(1)
+                                                .fixedSize(horizontal: true, vertical: false)
                                         }
                                     }
-                                    .frame(width: 70, alignment: .trailing)
+                                    .frame(width: 85, alignment: .trailing)
                                 }
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 12)

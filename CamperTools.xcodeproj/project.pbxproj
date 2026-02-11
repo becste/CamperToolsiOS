@@ -8,13 +8,14 @@
 
 /* Begin PBXFileReference section */
 		CF1308A92F3AE0AC00983AE2 /* CamperTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = CamperTools.xcodeproj; sourceTree = "<group>"; };
+		CF1308EA2F3AE9DB00983AE2 /* CamperTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = CamperTools.xcodeproj; sourceTree = "<group>"; };
+		CF130A352F3C38A300983AE2 /* CamperTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = CamperTools.xcodeproj; sourceTree = "<group>"; };
 		CF641DA92F2F0A2B003D83F2 /* CamperTools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CamperTools.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CF641DAB2F2F0A2B003D83F2 /*  */ = {
+		CF641DAB2F2F0A2B003D83F2 = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			name = "";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -35,10 +36,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CF1308F32F3AE9DB00983AE2 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CF130A3E2F3C38A300983AE2 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		CF641DA02F2F0A2B003D83F2 = {
 			isa = PBXGroup;
 			children = (
-				CF641DAB2F2F0A2B003D83F2 /*  */,
+				CF641DAB2F2F0A2B003D83F2,
 				CF641DAA2F2F0A2B003D83F2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,7 +78,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				CF641DAB2F2F0A2B003D83F2 /*  */,
+				CF641DAB2F2F0A2B003D83F2,
 			);
 			name = CamperTools;
 			packageProductDependencies = (
@@ -104,6 +115,14 @@
 			productRefGroup = CF641DAA2F2F0A2B003D83F2 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = CF1308F32F3AE9DB00983AE2 /* Products */;
+					ProjectRef = CF1308EA2F3AE9DB00983AE2 /* CamperTools.xcodeproj */;
+				},
+				{
+					ProductGroup = CF130A3E2F3C38A300983AE2 /* Products */;
+					ProjectRef = CF130A352F3C38A300983AE2 /* CamperTools.xcodeproj */;
+				},
 				{
 					ProductGroup = CF1308B22F3AE0AC00983AE2 /* Products */;
 					ProjectRef = CF1308A92F3AE0AC00983AE2 /* CamperTools.xcodeproj */;
@@ -260,16 +279,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.3;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9DZN2QL5RY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = CamperTools;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Required for the flashlight.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Required for elevation and local weather.";
@@ -281,7 +302,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = remency.CamperTools;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -304,15 +325,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1.3;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9DZN2QL5RY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = CamperTools;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Required for the flashlight.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Required for elevation and local weather.";
@@ -324,7 +347,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = remency.CamperTools;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

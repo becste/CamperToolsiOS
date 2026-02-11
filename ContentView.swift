@@ -56,7 +56,7 @@ struct SettingsView: View {
                             
                             Text("Adjust the offsets manually (in degrees) or use Auto Calibrate to zero-out the current tilt.")
                                 .font(.caption)
-                                .foregroundColor(useNightMode ? .red.opacity(0.8) : .secondary)
+                                .foregroundColor(useNightMode ? .red.opacity(0.8) : .white)
 
                             // Manual Pitch
                             VStack(alignment: .leading, spacing: 8) {
@@ -257,7 +257,7 @@ struct ContentView: View {
                         
                         Text("GPS: Accurate to \(Int(location.horizontalAccuracy))m")
                             .font(.caption)
-                            .foregroundColor(useNightMode ? .red.opacity(0.7) : .secondary)
+                            .foregroundColor(useNightMode ? .red.opacity(0.7) : .white)
                     } else {
                         Text("Getting Elevation...")
                             .font(.title2)
@@ -485,15 +485,16 @@ struct ContentView: View {
                 if simulatedHeading > 360 { simulatedHeading = 0 }
             }
         }
-        .sheet(isPresented: $showSettings) {
+        .fullScreenCover(isPresented: $showSettings) {
             SettingsView(motionManager: motionManager, debugSimulateCompass: $debugSimulateCompass)
         }
         .sheet(isPresented: $showWeatherDetail) {
             if let weather = weatherService.weather, let summary = WeatherHelper.process(weather, useImperial: useImperial) {
                 WeatherDetailView(summary: summary, useImperial: useImperial, useNightMode: useNightMode)
+                    .presentationBackground(useNightMode ? .black : Color(white: 0.15))
             }
         }
-        .sheet(isPresented: $showWheelAdjust) {
+        .fullScreenCover(isPresented: $showWheelAdjust) {
             WheelAdjustView(motionManager: motionManager)
         }
         .sheet(isPresented: $showHelp) {

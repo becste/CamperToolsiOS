@@ -34,104 +34,113 @@ struct WheelAdjustView: View {
                 (useNightMode ? Color.black : Color(white: 0.15))
                     .ignoresSafeArea()
                 
-                VStack(spacing: 15) {
-                    
-                    // Inputs
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Vehicle Dimensions")
-                            .font(.headline)
-                            .foregroundColor(useNightMode ? .red : .white)
+                ScrollView {
+                    VStack(spacing: 15) {
                         
-                        HStack(spacing: 15) {
-                            dimensionInput(label: "Wheelbase (\(useImperial ? "in" : "cm"))", value: $wheelbase)
-                            dimensionInput(label: "Track Width (\(useImperial ? "in" : "cm"))", value: $trackWidth)
-                        }
-                    }
-                    .padding(12)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(12)
-                    
-                    // Results Grid
-                    VStack(spacing: 10) {
-                        let shims = calculateShims()
-                        
-                        Text("FRONT (Phone Top)")
-                            .font(.caption.bold())
-                            .foregroundColor(useNightMode ? .red : .white)
-                        
-                        HStack(spacing: 30) {
-                            shimView(label: "FL", value: shims.fl)
-                            shimView(label: "FR", value: shims.fr)
-                        }
-                        
-                        // Visual vehicle representation
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(useNightMode ? Color.red : Color.white.opacity(0.3), lineWidth: 2)
-                                .frame(width: 80, height: 120)
+                        // Inputs
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Vehicle Dimensions")
+                                .font(.headline)
+                                .foregroundColor(useNightMode ? .red : .white)
                             
-                            VStack {
-                                Image(systemName: "arrow.up")
-                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
-                                Text("VEHICLE\nFRONT")
-                                    .font(.system(size: 8, weight: .bold))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
+                            HStack(spacing: 15) {
+                                dimensionInput(label: "Wheelbase (\(useImperial ? "in" : "cm"))", value: $wheelbase)
+                                dimensionInput(label: "Track Width (\(useImperial ? "in" : "cm"))", value: $trackWidth)
                             }
                         }
-                        .padding(.vertical, 5)
-                        
-                        HStack(spacing: 30) {
-                            shimView(label: "BL", value: shims.bl)
-                            shimView(label: "BR", value: shims.br)
-                        }
-                        
-                        Text("REAR")
-                            .font(.caption.bold())
-                            .foregroundColor(useNightMode ? .red : .white)
-                    }
-                    .padding(12)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(12)
-                    
-                    // Recalculate Button
-                    Button(action: startMeasurement) {
-                        HStack {
-                            if isMeasuring {
-                                ProgressView()
-                                    .tint(useNightMode ? .red : .white)
-                                    .padding(.trailing, 10)
-                                Text("Measuring... (\(countdown))")
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                                Text("2S delayed recalculate")
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
                         .padding(12)
-                        .background(isMeasuring ? Color.gray.opacity(0.3) : Color.secondary.opacity(0.1))
-                        .foregroundColor(useNightMode ? .red : .teal)
-                        .cornerRadius(10)
-                    }
-                    .disabled(isMeasuring)
-                    
-                    Spacer()
-                    
-                    Button(action: { dismiss() }) {
-                        Text("Close")
-                            .font(.headline)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        // Results Grid
+                        VStack(spacing: 10) {
+                            let shims = calculateShims()
+                            
+                            Text("FRONT (Phone Top)")
+                                .font(.caption.bold())
+                                .foregroundColor(useNightMode ? .red : .white)
+                            
+                            HStack(spacing: 30) {
+                                shimView(label: "FL", value: shims.fl)
+                                shimView(label: "FR", value: shims.fr)
+                            }
+                            
+                            // Visual vehicle representation
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(useNightMode ? Color.red : Color.white.opacity(0.3), lineWidth: 2)
+                                    .frame(width: 80, height: 120)
+                                
+                                VStack {
+                                    Image(systemName: "arrow.up")
+                                        .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
+                                    Text("VEHICLE\nFRONT")
+                                        .font(.system(size: 8, weight: .bold))
+                                        .multilineTextAlignment(.center)
+                                        .foregroundColor(useNightMode ? .red : .white.opacity(0.5))
+                                }
+                            }
+                            .padding(.vertical, 5)
+                            
+                            HStack(spacing: 30) {
+                                shimView(label: "BL", value: shims.bl)
+                                shimView(label: "BR", value: shims.br)
+                            }
+                            
+                            Text("REAR")
+                                .font(.caption.bold())
+                                .foregroundColor(useNightMode ? .red : .white)
+                        }
+                        .padding(12)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(12)
+                        
+                        // Recalculate Button
+                        Button(action: startMeasurement) {
+                            HStack {
+                                if isMeasuring {
+                                    ProgressView()
+                                        .tint(useNightMode ? .red : .white)
+                                        .padding(.trailing, 10)
+                                    Text("Measuring... (\(countdown))")
+                                } else {
+                                    Image(systemName: "arrow.clockwise")
+                                    Text("2S delayed recalculate")
+                                }
+                            }
                             .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.secondary.opacity(0.2))
+                            .padding(12)
+                            .background(isMeasuring ? Color.gray.opacity(0.3) : Color.secondary.opacity(0.1))
                             .foregroundColor(useNightMode ? .red : .teal)
                             .cornerRadius(10)
+                        }
+                        .disabled(isMeasuring)
+                        
+                        Button(action: { dismiss() }) {
+                            Text("Close")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.secondary.opacity(0.2))
+                                .foregroundColor(useNightMode ? .red : .teal)
+                                .cornerRadius(10)
+                        }
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom, 10)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 10)
             }
             .navigationTitle("Height Adjust")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Save") {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                    .foregroundColor(useNightMode ? .red : .teal)
+                }
+            }
             .onReceive(timer) { _ in
                 if isMeasuring {
                     sumX += motionManager.gravityX
