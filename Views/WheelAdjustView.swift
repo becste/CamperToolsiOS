@@ -13,6 +13,9 @@ struct WheelAdjustView: View {
     @AppStorage("pref_wheelbase") private var wheelbase: Double = 0.0
     @AppStorage("pref_track_width") private var trackWidth: Double = 0.0
     
+    @State private var wheelbaseStr: String = ""
+    @State private var trackWidthStr: String = ""
+    
     @Environment(\.dismiss) var dismiss
     
     @State private var currentTiltX: Double = 0.0
@@ -44,8 +47,8 @@ struct WheelAdjustView: View {
                                 .foregroundColor(useNightMode ? .red : .white)
                             
                             HStack(spacing: 15) {
-                                dimensionInput(label: "Wheelbase (\(useImperial ? "in" : "cm"))", value: $wheelbase)
-                                dimensionInput(label: "Track Width (\(useImperial ? "in" : "cm"))", value: $trackWidth)
+                                dimensionInput(label: "Wheelbase (\(useImperial ? "in" : "cm"))", text: $wheelbaseStr)
+                                dimensionInput(label: "Track Width (\(useImperial ? "in" : "cm"))", text: $trackWidthStr)
                             }
                         }
                         .padding(12)
@@ -152,8 +155,17 @@ struct WheelAdjustView: View {
                     currentTiltY = motionManager.gravityY - calibPitch
                 }
             }
+            .onChange(of: wheelbaseStr) { newValue in
+                if let d = Double(newValue) { wheelbase = d }
+            }
+            .onChange(of: trackWidthStr) { newValue in
+                if let d = Double(newValue) { trackWidth = d }
+            }
         }
         .onAppear {
+            wheelbaseStr = wheelbase == 0 ? "" : String(format: "%.1f", wheelbase)
+            trackWidthStr = trackWidth == 0 ? "" : String(format: "%.1f", trackWidth)
+            
             currentTiltX = motionManager.gravityX - calibRoll
             currentTiltY = motionManager.gravityY - calibPitch
             
@@ -167,13 +179,13 @@ struct WheelAdjustView: View {
         }
     }
     
-    private func dimensionInput(label: String, value: Binding<Double>) -> some View {
+    private func dimensionInput(label: String, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(label)
                 .font(.caption)
                 .foregroundColor(useNightMode ? .red : .white)
             
-            TextField("0.0", value: value, format: .number)
+            TextField("0.0", text: text)
                 .keyboardType(.decimalPad)
                 .padding(10)
                 .background(Color.secondary.opacity(0.2))

@@ -13,3 +13,4 @@
 *   **Bug Fixes**: 
     *   Improved stability of the IAP donation process and state management.
     *   Fixed a bug where the flashlight toggle would remain "on" in the UI after an app restart even if the light was off.
+    *   Improved the editing experience in Height Adjust by allowing full deletion of input values.
