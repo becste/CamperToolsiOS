@@ -1,6 +1,6 @@
 # Release Notes - CamperTools iOS
 
-## v1.7
+## v1.8
 *   **Consolidated Project Structure**: Cleaned up duplicate files and moved the primary source code to the root directory for better maintainability.
 *   **App Store Optimization**: 
     *   Fixed App Icon mapping to ensure it appears correctly in App Store Connect.
