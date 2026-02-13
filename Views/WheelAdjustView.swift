@@ -23,6 +23,7 @@ struct WheelAdjustView: View {
     
     @State private var isMeasuring = false
     @State private var countdown: Int = 0
+    @State private var measurementTimer: Timer?
     
     // Measurement accumulators
     @State private var sumX: Double = 0.0
@@ -144,6 +145,10 @@ struct WheelAdjustView: View {
                     .foregroundColor(useNightMode ? .red : .teal)
                 }
             }
+            .toolbarBackground(useNightMode ? Color.black : Color(white: 0.15), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .tint(useNightMode ? .red : .teal)
             .onReceive(timer) { _ in
                 if isMeasuring {
                     sumX += motionManager.gravityX
@@ -168,14 +173,10 @@ struct WheelAdjustView: View {
             
             currentTiltX = motionManager.gravityX - calibRoll
             currentTiltY = motionManager.gravityY - calibPitch
-            
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = useNightMode ? .black : UIColor(white: 0.15, alpha: 1.0)
-            appearance.titleTextAttributes = [.foregroundColor: useNightMode ? UIColor.red : UIColor.white]
-            
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        }
+        .onDisappear {
+            measurementTimer?.invalidate()
+            measurementTimer = nil
         }
     }
     
@@ -200,19 +201,11 @@ struct WheelAdjustView: View {
                 .font(.headline)
                 .foregroundColor(useNightMode ? .red : .white)
             
-            Text(formatShim(value))
+            Text(UnitFormatting.shimHeight(value, useImperial: useImperial))
                 .font(.title2.bold())
                 .foregroundColor(useNightMode ? .red : .teal)
         }
         .frame(width: 80)
-    }
-    
-    private func formatShim(_ val: Double) -> String {
-        if useImperial {
-            return String(format: "%.1f\"", val)
-        } else {
-            return String(format: "%.1f cm", val)
-        }
     }
     
     private func startMeasurement() {
@@ -221,12 +214,14 @@ struct WheelAdjustView: View {
         sumY = 0
         count = 0
         countdown = 20 // 2 seconds at 0.1s intervals
-        
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            countdown -= 1
-            if countdown <= 0 {
+
+        measurementTimer?.invalidate()
+        measurementTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            self.countdown -= 1
+            if self.countdown <= 0 {
                 timer.invalidate()
-                finishMeasurement()
+                self.measurementTimer = nil
+                self.finishMeasurement()
             }
         }
     }
@@ -243,33 +238,11 @@ struct WheelAdjustView: View {
     }
     
     private func calculateShims() -> (fl: Double, fr: Double, bl: Double, br: Double) {
-        // Invert tilt values to match Android logic: 
-        // iOS gravity.y is negative when top is tilted UP.
-        // Android adjustedY is positive when top is tilted UP.
-        let adjX = -max(-1, min(1, currentTiltX))
-        let adjY = -max(-1, min(1, currentTiltY))
-        
-        // Height Calculation (from Android logic)
-        let hFront = (wheelbase / 2.0) * adjY
-        let hRear = -(wheelbase / 2.0) * adjY
-        
-        let hRight = (trackWidth / 2.0) * adjX
-        let hLeft = -(trackWidth / 2.0) * adjX
-        
-        // Corners
-        let hFL = hFront + hLeft
-        let hFR = hFront + hRight
-        let hBL = hRear + hLeft
-        let hBR = hRear + hRight
-        
-        // Shim = difference from MAX
-        let maxH = max(max(hFL, hFR), max(hBL, hBR))
-        
-        return (
-            fl: maxH - hFL,
-            fr: maxH - hFR,
-            bl: maxH - hBL,
-            br: maxH - hBR
+        ShimCalculator.calculate(
+            tiltX: currentTiltX,
+            tiltY: currentTiltY,
+            wheelbase: wheelbase,
+            trackWidth: trackWidth
         )
     }
 }

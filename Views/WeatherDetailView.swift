@@ -32,7 +32,7 @@ struct WeatherDetailView: View {
                                 .frame(height: 1)
                                 .background(useNightMode ? Color.red.opacity(0.5) : Color.white.opacity(0.3))
                             
-                            DetailRow(label: "Wind Gusts", value: "\(formatSpeed(summary.maxGusts)) \(summary.dailyForecasts.first?.maxGustsDirection ?? "")", isNight: useNightMode)
+                            DetailRow(label: "Wind Gusts", value: "\(UnitFormatting.speed(summary.maxGusts, useImperial: useImperial)) \(summary.maxGustsDirection)", isNight: useNightMode)
                             
                             DetailRow(label: "Sunshine (24h)", value: String(format: "%.1fh (%.0f%%)", summary.sunshineHours, summary.sunshinePercent), isNight: useNightMode)
                             
@@ -61,7 +61,7 @@ struct WeatherDetailView: View {
                                     Spacer()
                                     
                                     // Temp Range
-                                    Text("\(formatTemp(day.minTemp)) / \(formatTemp(day.maxTemp))")
+                                    Text("\(UnitFormatting.temperature(day.minTemp, useImperial: useImperial, decimals: 0, includeUnit: false)) / \(UnitFormatting.temperature(day.maxTemp, useImperial: useImperial, decimals: 0, includeUnit: false))")
                                         .foregroundColor(useNightMode ? .red : .white)
                                     
                                     Spacer()
@@ -69,7 +69,7 @@ struct WeatherDetailView: View {
                                     // Precip / Gusts
                                     VStack(alignment: .trailing) {
                                         if day.precipTotal > 0.1 {
-                                            Text(formatPrecip(day.precipTotal))
+                                            Text(UnitFormatting.precipitation(day.precipTotal, useImperial: useImperial))
                                                 .font(.caption)
                                                 .foregroundColor(useNightMode ? .red.opacity(0.8) : .teal)
                                         } else {
@@ -79,7 +79,7 @@ struct WeatherDetailView: View {
                                         }
                                         
                                         if day.maxGusts > 20 {
-                                            Text("\(formatSpeed(day.maxGusts)) \(day.maxGustsDirection)")
+                                            Text("\(UnitFormatting.speed(day.maxGusts, useImperial: useImperial)) \(day.maxGustsDirection)")
                                                 .font(.caption2)
                                                 .foregroundColor(useNightMode ? .red.opacity(0.8) : .orange)
                                                 .lineLimit(1)
@@ -114,33 +114,6 @@ struct WeatherDetailView: View {
         }
     }
     
-    // Helpers copied from ContentView
-    private func formatSpeed(_ kmh: Double) -> String {
-        if useImperial {
-            let mph = kmh * 0.621371
-            return String(format: "%.1f mph", mph)
-        } else {
-            return String(format: "%.1f km/h", kmh)
-        }
-    }
-    
-    private func formatTemp(_ celsius: Double) -> String {
-        if useImperial {
-            let f = (celsius * 9/5) + 32
-            return String(format: "%.0f°", f)
-        } else {
-            return String(format: "%.0f°", celsius)
-        }
-    }
-    
-    private func formatPrecip(_ mm: Double) -> String {
-        if useImperial {
-            let inches = mm * 0.0393701
-            return String(format: "%.2f\"", inches)
-        } else {
-            return String(format: "%.1fmm", mm)
-        }
-    }
 }
 
 struct DetailRow: View {

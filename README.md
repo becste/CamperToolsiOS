@@ -21,7 +21,7 @@
 
 *   **Language:** Swift
 *   **Framework:** SwiftUI
-*   **Platform:** iOS 15.0+
+*   **Platform:** iOS 26.1+
 *   **Architecture:** Combine-driven ObservableObjects (MVVM).
 *   **APIs:**
     *   **Location:** CoreLocation for accurate weather and elevation.
@@ -38,6 +38,16 @@
     Open the project folder or `CamperTools.xcodeproj`.
 3.  **Build and Run:**
     Press `Cmd + R` to run on the Simulator or a physical iPhone.
+
+## ✅ Core Logic Tests
+
+Run core weather/shim unit tests with SwiftPM:
+
+```bash
+swift test --build-path /tmp/campertools-spm-build
+```
+
+Use the custom build path so SwiftPM artifacts stay outside the app source tree.
 
 ## 🤝 Contributing
 

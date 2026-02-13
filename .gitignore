@@ -3,6 +3,9 @@
 *.swp
 *.lock
 *.xcarchive
+*.dSYM
+
+# Signing artifacts
 *.key
 *.p12
 *.cer
@@ -17,7 +20,11 @@ DerivedData/
 CamperToolsAndroid/
 
 # Swift PM
-.swiftpm
+.swiftpm/
+.build/
 
-# User Specific
-xcuserdata/\n# Build artifacts\n*.xcarchive\n*.dSYM\nDerivedData/
+# User specific Xcode data
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xcodeproj/xcuserdata/

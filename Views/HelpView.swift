@@ -65,15 +65,10 @@ struct HelpView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = useNightMode ? .black : UIColor(white: 0.15, alpha: 1.0)
-            appearance.titleTextAttributes = [.foregroundColor: useNightMode ? UIColor.red : UIColor.white]
-            
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            .toolbarBackground(useNightMode ? Color.black : Color(white: 0.15), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .tint(useNightMode ? .red : .teal)
         }
     }
     
